@@ -1,6 +1,11 @@
 #include <iostream>
 #include <string>
 
+#include "./database.hpp"
+
+using namespace database;
+
+
 int main() {
     std::cout << "printing main" << '\n';
     bool is_on = true;
@@ -10,6 +15,14 @@ int main() {
         std::string command;
         
         std::cin >> command;
+
+        if (command == "create") {
+            std::cout << "enter db name\n";
+            std::string res;
+            std::cin >> res;
+            database::Database db;
+            db.create_db(res);
+        }
 
         if (command == "exit") {
             std::cout << "now exiting program ...\n";
