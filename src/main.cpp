@@ -22,6 +22,12 @@ int main() {
             std::cin >> res;
             database::Database db;
             db.create_db(res);
+        } else if (command == "drop") {
+            std::cout << "enter db name\n";
+            std::string res;
+            std::cin >> res;
+            database::Database db;
+            db.drop_db(res);
         }
 
         if (command == "exit") {

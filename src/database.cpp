@@ -19,5 +19,12 @@ namespace database {
         std::cout << db_name << "Writing to a file in C++." << '\n';
     }
 
-    void Database::drop_db() {}
+    void Database::drop_db(std::string db_name) {
+        std::filesystem::path file_path = std::filesystem::current_path() / "data" / (db_name + ".db");
+        if (std::filesystem::exists(file_path)) {
+            std::filesystem::remove(file_path);
+        } else {
+            std::cerr << "DB: " << db_name << " does not exist" << "\n";
+        }
+    }
 }
