@@ -1,4 +1,4 @@
-#include "database.hpp"
+#include "../src/database.hpp"
 #include <fstream>
 #include <iostream>
 #include <cassert>
