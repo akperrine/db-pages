@@ -8,29 +8,22 @@
 namespace database {
 
 static const std::string DB_NAME = "test_file";
+static const std::filesystem::path DB_PATH = std::filesystem::current_path() / "data" / (DB_NAME + ".db");
 
 class TestDatabase : public ::testing::Test {
 protected:
     void TearDown() override {
         std::string filename = DB_NAME;
-        std::filesystem::remove(std::filesystem::current_path() / "data" / (DB_NAME + ".db")); 
+        std::filesystem::remove(DB_PATH); 
     }
 };
 
     TEST_F(TestDatabase, TestCreateDB) {
-        std::string filename = DB_NAME; 
         Database db;
         
-        try {
-
-        db.create_db(filename);
-        std::ifstream file(std::filesystem::current_path() / "data" / (DB_NAME + ".db"));
+        db.create_db(DB_NAME);
+        std::ifstream file(DB_PATH);
         EXPECT_TRUE(file.is_open()); 
         file.close(); 
-        } catch (...) {
-            // std::filesystem::remove(std::filesystem::current_path() / "data" / (filename + ".db")); 
-        }
-
-    //     std::filesystem::remove(std::filesystem::current_path() / "data" / (filename + ".db")); 
     }
 }
