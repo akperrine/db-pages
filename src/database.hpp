@@ -1,3 +1,6 @@
+#ifndef DATABASE_HPP
+#define DATABASE_HPP
+
 #include <fstream>
 #include <string>
 
@@ -12,3 +15,5 @@ private:
 };
 
 };
+
+#endif // DATABASE_HPP
