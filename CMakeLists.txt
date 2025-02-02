@@ -10,7 +10,7 @@ target_compile_features(${PROJECT_NAME}  PRIVATE cxx_std_17)
 
 
 if(BUILD_TESTING)
-  add_library(DatabaseLibrary src/database.cpp)
+  add_library(DatabaseLibrary src/database.cpp src/btree.cpp)
 
   include(FetchContent)
   FetchContent_Declare(
@@ -23,7 +23,7 @@ if(BUILD_TESTING)
 
   enable_testing()
 
-  add_executable(Tests test/database_test.cpp)
+  add_executable(Tests test/database_test.cpp test/btree_test.cpp)
 
   target_link_libraries(
     Tests
