@@ -31,17 +31,28 @@ char BTree::get_node_type(Node node) {
 uint16_t BTree::n_keys(Node node) {
     assert(node.data.size() > 3);
     uint16_t n_keys;
-    memcpy(&n_keys, &node.data, 2);
+    memcpy(&n_keys, &node.data[1], 2);
     return n_keys;
 }
 
-void set_header(int node_type, int n_keys) {
-    //TODO:
+Node BTree::set_header(char node_type, uint16_t n_keys) {
+    // TODO issues with constructor
+    // static_cast<char*>(static_cast<void*>(&x));
+    char* keys_as_bytes = static_cast<char*>(static_cast<void*>(&n_keys));
+    std::vector<char> data;
+    data.push_back(node_type);
+    data.push_back(keys_as_bytes[0]);
+    data.push_back(keys_as_bytes[1]);
+    Node *node = new Node(data);
+    return *node;
 }
+
 // func (node BNode) setHeader(btype uint16, nkeys uint16) {
 //     binary.LittleEndian.PutUint16(node[0:2], btype)
 //     binary.LittleEndian.PutUint16(node[2:4], nkeys)
 // }
+
+
 int offset_pos(Node bNode, int index) {
     //TODO:
     return 1;

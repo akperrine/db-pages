@@ -1,2 +1,2 @@
 # cd ./build; ctest -V
-cd ./build; ctest
+cd ./build; ctest --output-on-failure
