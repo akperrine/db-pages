@@ -37,7 +37,6 @@ uint16_t BTree::n_keys(Node node) {
 
 Node BTree::set_header(char node_type, uint16_t n_keys) {
     // TODO issues with constructor
-    // static_cast<char*>(static_cast<void*>(&x));
     char* keys_as_bytes = static_cast<char*>(static_cast<void*>(&n_keys));
     std::vector<char> data;
     data.push_back(node_type);
