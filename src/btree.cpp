@@ -1,4 +1,5 @@
 #include "./btree.hpp"
+#include "./node.hpp"
 #include <vector>
 #include <cassert>
 #include <cstdint>
@@ -36,7 +37,6 @@ uint16_t BTree::n_keys(Node node) {
 }
 
 Node BTree::set_header(char node_type, uint16_t n_keys) {
-    // TODO issues with constructor
     char* keys_as_bytes = static_cast<char*>(static_cast<void*>(&n_keys));
     std::vector<char> data;
     data.push_back(node_type);
@@ -46,14 +46,21 @@ Node BTree::set_header(char node_type, uint16_t n_keys) {
     return *node;
 }
 
-// func (node BNode) setHeader(btype uint16, nkeys uint16) {
-//     binary.LittleEndian.PutUint16(node[0:2], btype)
-//     binary.LittleEndian.PutUint16(node[2:4], nkeys)
+uint64_t get_ptr(uint16_t index) {
+    return 1;
+}
+
+// pointers
+// func (node BNode) getPtr(idx uint16) uint64 {
+//     assert(idx < node.nkeys())
+//     pos := HEADER + 8*idx
+//     return binary.LittleEndian.Uint64(node[pos:])
 // }
+// func (node BNode) setPtr(idx uint16, val uint64) // trivial; omitted
 
-
-int offset_pos(Node bNode, int index) {
-    //TODO:
+int BTree::offset_pos(Node bNode, int index) {
+    assert(1 <= index && index <= n_keys(bNode));
+    uint16_t offeset = header + 2 *(index - 1);
     return 1;
 }
 // func offsetPos(node BNode, idx uint16) uint16 {
