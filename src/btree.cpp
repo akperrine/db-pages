@@ -1,5 +1,4 @@
 #include "./btree.hpp"
-#include "./node.hpp"
 #include <vector>
 #include <cassert>
 #include <cstdint>
@@ -22,21 +21,21 @@ static constexpr int bnode_leaf = 2;
 // | klen | vlen | key | val |
 // |  2B  |  2B  | ... | ... |
 
-char BTree::get_node_type(Node node) {
-    assert(node.data.size() > 3);
-    int node_type = node.data[0];
+char Node::get_node_type() {
+    assert(data.size() > 3);
+    int node_type = data[0];
     
     return node_type;
 }
 
-uint16_t BTree::n_keys(Node node) {
+uint16_t Node::n_keys(Node node) {
     assert(node.data.size() > 3);
     uint16_t n_keys;
     memcpy(&n_keys, &node.data[1], 2);
     return n_keys;
 }
 
-Node BTree::set_header(char node_type, uint16_t n_keys) {
+Node Node::set_header(char node_type, uint16_t n_keys) {
     char* keys_as_bytes = static_cast<char*>(static_cast<void*>(&n_keys));
     std::vector<char> data;
     data.push_back(node_type);
@@ -58,7 +57,7 @@ uint64_t get_ptr(uint16_t index) {
 // }
 // func (node BNode) setPtr(idx uint16, val uint64) // trivial; omitted
 
-int BTree::offset_pos(Node bNode, int index) {
+int Node::offset_pos(Node bNode, int index) {
     assert(1 <= index && index <= n_keys(bNode));
     uint16_t offeset = header + 2 *(index - 1);
     return 1;
