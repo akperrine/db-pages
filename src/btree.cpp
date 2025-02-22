@@ -28,24 +28,22 @@ char Node::get_node_type() {
     return node_type;
 }
 
-uint16_t Node::n_keys(Node node) {
-    assert(node.data.size() > 3);
+uint16_t Node::n_keys() {
+    assert(data.size() > 3);
     uint16_t n_keys;
-    memcpy(&n_keys, &node.data[1], 2);
+    memcpy(&n_keys, &data[1], sizeof(u_int16_t));
     return n_keys;
 }
 
-Node Node::set_header(char node_type, uint16_t n_keys) {
+void Node::set_header(char node_type, uint16_t n_keys) {
     char* keys_as_bytes = static_cast<char*>(static_cast<void*>(&n_keys));
-    std::vector<char> data;
     data.push_back(node_type);
     data.push_back(keys_as_bytes[0]);
     data.push_back(keys_as_bytes[1]);
-    Node *node = new Node(data);
-    return *node;
 }
 
-uint64_t get_ptr(uint16_t index) {
+uint64_t Node::get_ptr(uint16_t index) {
+    assert(index < n_keys());
     return 1;
 }
 
@@ -58,7 +56,7 @@ uint64_t get_ptr(uint16_t index) {
 // func (node BNode) setPtr(idx uint16, val uint64) // trivial; omitted
 
 int Node::offset_pos(Node bNode, int index) {
-    assert(1 <= index && index <= n_keys(bNode));
+    assert(1 <= index && index <= n_keys());
     uint16_t offeset = header + 2 *(index - 1);
     return 1;
 }

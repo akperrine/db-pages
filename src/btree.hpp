@@ -10,11 +10,12 @@ public:
     std::vector<char> data;
 
     Node() {};
-    Node(std::vector<char> data) : data(data) {};
+    Node(const std::vector<char>& data) : data(data) {};
 
     char get_node_type();
-    uint16_t n_keys(Node node);
-    Node set_header(char node_type, uint16_t n_keys);
+    uint16_t n_keys();
+    void set_header(char node_type, uint16_t n_keys);
+    uint64_t get_ptr(uint16_t index);
     int offset_pos(Node bNode, int index);
 private:
 };
