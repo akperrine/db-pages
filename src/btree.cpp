@@ -5,7 +5,7 @@
 
 namespace database {
 
-static constexpr int header = 4;
+static constexpr int header = 3;
 
 static constexpr int btree_page_size = 4096;
 static constexpr int btree_max_key_size = 1000;
@@ -44,16 +44,16 @@ void Node::set_header(char node_type, uint16_t n_keys) {
 
 uint64_t Node::get_ptr(uint16_t index) {
     assert(index < n_keys());
-    return 1;
+    auto pos  = header + 8 * index;
+    uint64_t child_ptr;
+    memcpy(&child_ptr, &data[pos], sizeof(uint16_t));
+
+    return child_ptr;
 }
 
-// pointers
-// func (node BNode) getPtr(idx uint16) uint64 {
-//     assert(idx < node.nkeys())
-//     pos := HEADER + 8*idx
-//     return binary.LittleEndian.Uint64(node[pos:])
-// }
-// func (node BNode) setPtr(idx uint16, val uint64) // trivial; omitted
+void Node::set_ptr(uint16_t index, uint64_t ptr) {
+
+}
 
 int Node::offset_pos(Node bNode, int index) {
     assert(1 <= index && index <= n_keys());
