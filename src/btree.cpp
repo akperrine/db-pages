@@ -46,7 +46,7 @@ uint64_t Node::get_ptr(uint16_t index) {
     assert(index < n_keys());
     auto pos  = header + 8 * index;
     uint64_t child_ptr;
-    memcpy(&child_ptr, &data[pos], sizeof(uint16_t));
+    memcpy(&child_ptr, &data[pos], sizeof(uint64_t));
 
     return child_ptr;
 }
