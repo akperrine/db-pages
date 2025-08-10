@@ -17,7 +17,7 @@ public:
     void set_header(char node_type, uint16_t n_keys);
     uint64_t get_ptr(uint16_t index);
     void set_ptr(uint16_t index, uint64_t val);
-    int offset_pos(Node bNode, int index);
+    uint16_t offset_pos(Node bNode, uint16_t index);
 private:
 };
 

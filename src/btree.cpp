@@ -55,17 +55,16 @@ void Node::set_ptr(uint16_t index, uint64_t ptr) {
 
 }
 
-int Node::offset_pos(Node bNode, int index) {
+uint16_t Node::offset_pos(Node bNode, uint16_t index) {
     assert(1 <= index && index <= n_keys());
-    uint16_t offeset = header + 2 *(index - 1);
-    return 1;
+    uint16_t offset = header + 2 *(index - 1);
+    return offset;
 }
-// func offsetPos(node BNode, idx uint16) uint16 {
-//     assert(1 <= idx && idx <= node.nkeys())
-//     return HEADER + 8*node.nkeys() + 2*(idx-1)
-// }
+
 int get_offset(int index) {
-    //TODO:
+    if (index == 0) {
+        return 0;
+    }
     return 1;
 }
 // func (node BNode) getOffset(idx uint16) uint16 {
