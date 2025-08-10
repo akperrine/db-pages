@@ -42,6 +42,7 @@ void Node::set_header(char node_type, uint16_t n_keys) {
     data.push_back(keys_as_bytes[1]);
 }
 
+// 8 bytes to accomodate standard 64-bit operating system mem address
 uint64_t Node::get_ptr(uint16_t index) {
     assert(index < n_keys());
     auto pos  = header + 8 * index;
@@ -51,28 +52,24 @@ uint64_t Node::get_ptr(uint16_t index) {
     return child_ptr;
 }
 
+// Not Tested
 void Node::set_ptr(uint16_t index, uint64_t ptr) {
 
 }
 
-uint16_t Node::offset_pos(Node bNode, uint16_t index) {
-    assert(1 <= index && index <= n_keys());
-    uint16_t offset = header + 2 *(index - 1);
-    return offset;
-}
 
-int get_offset(int index) {
+// Not Tested
+uint16_t Node::get_offset(uint16_t index) {
     if (index == 0) {
         return 0;
     }
-    return 1;
+    // skip header + all pointers to index (-1 since will start at 0)
+    uint16_t offset_pos = header + 8 * n_keys() + 2 *(index-1);
+    
+    return offset_pos;
 }
-// func (node BNode) getOffset(idx uint16) uint16 {
-//     if idx == 0 {
-//         return 0
-//     }
-//     return binary.LittleEndian.Uint16(node[offsetPos(node, idx):])
-// }
+
+
 void set_offset(int index, int offset) {
     //TODO:
 }
