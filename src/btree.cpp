@@ -31,7 +31,7 @@ char Node::get_node_type() {
 uint16_t Node::n_keys() {
     assert(data.size() > 3);
     uint16_t n_keys;
-    memcpy(&n_keys, &data[1], sizeof(u_int16_t));
+    memcpy(&n_keys, &data[1], sizeof(uint16_t));
     return n_keys;
 }
 
@@ -42,6 +42,7 @@ void Node::set_header(char node_type, uint16_t n_keys) {
     data.push_back(keys_as_bytes[1]);
 }
 
+// Not Tested
 // 8 bytes to accomodate standard 64-bit operating system mem address
 uint64_t Node::get_ptr(uint16_t index) {
     assert(index < n_keys());
@@ -54,7 +55,12 @@ uint64_t Node::get_ptr(uint16_t index) {
 
 // Not Tested
 void Node::set_ptr(uint16_t index, uint64_t ptr) {
+    assert(index < n_keys());
+    uint16_t position = header + 8 * index;
 
+    assert(position + sizeof(uint64_t) > data.size());
+    char* destination_ptr = data.data() + position;
+    memcpy(destination_ptr, &ptr, sizeof(uint64_t));
 }
 
 
@@ -65,74 +71,42 @@ uint16_t Node::get_offset(uint16_t index) {
     }
     // skip header + all pointers to index (-1 since will start at 0)
     uint16_t offset_pos = header + 8 * n_keys() + 2 *(index-1);
-    
     return offset_pos;
 }
 
+// Not Tested
+uint16_t Node::get_kv_pos(uint16_t index) {
+    if (index == 0) {
+        return 0;
+    }
+    uint16_t kv_pos = header + 8 * n_keys() + 2 * n_keys() + get_offset(index);
+    return kv_pos;
+}
 
-void set_offset(int index, int offset) {
-    //TODO:
+// Not Tested
+std::vector<char> Node::get_key(uint16_t index) {
+    assert(index < n_keys());
+    uint16_t position = get_kv_pos(index);
+    uint16_t k_length;
+    memcpy(&k_length, &data[position], sizeof(uint16_t));
+    // + 4 to skip the 2B key len and 2B val ken
+    char* k_start = data.data() + (position + 4);
+    return std::vector<char>(k_start, k_start + k_length);
 }
-// func (node BNode) setOffset(idx uint16, offset uint16)
 
+// Not Tested (likely needs review too)
+std::vector<char> Node::get_val(uint16_t index) {
+    assert(index < n_keys());
+    uint16_t position = get_kv_pos(index);
+    // Must find key length also to know where to start val read
+    uint16_t k_length;
+    uint16_t v_length;
+    memcpy(&k_length, &data[position], sizeof(uint16_t));
+    memcpy(&v_length, &data[position + 2], sizeof(uint16_t));
 
-// kvPos returns the position of the nth KV pair relative to the whole node.
-int kv_pos(int index) {
-    //TODO:
-    return 1;
+    char* v_start = data.data() + (position + 4 + k_length);
+    return std::vector<char>(v_start, v_start + v_length);
 }
-// // key-values
-// func (node BNode) kvPos(idx uint16) uint16 {
-//     assert(idx <= node.nkeys())
-//     return HEADER + 8*node.nkeys() + 2*node.nkeys() + node.getOffset(idx)
-// }
-std::vector<char> get_key(int index) {
-    //TODO:
-    std::vector<char> val;
-    return val;  
-}
-// func (node BNode) getKey(idx uint16) []byte {
-//     assert(idx < node.nkeys())
-//     pos := node.kvPos(idx)
-//     klen := binary.LittleEndian.Uint16(node[pos:])
-//     return node[pos+4:][:klen]
-// }
-std::vector<char> get_val(int index) {
-    //TODO:
-    std::vector<char> val;
-    return val;   
-}
-// func (node BNode) getVal(idx uint16) []byte
 
-// It also conveniently returns the node size (used space) with an off-by-one lookup.
-int n_bytes(Node node) {
-    //TODO:
-    return 1;
 }
-// // node size in bytes
-// func (node BNode) nbytes() uint16 {
-//     return node.kvPos(node.nkeys())
-// }
-// returns the first kid node whose range intersects the key. (kid[i] <= key)
-// TODO: binary search
-int node_lookup(Node node, std::vector<char> key) {
-    //TODO:
-    return 1;
-}
-// func nodeLookupLE(node BNode, key []byte) uint16 {
-//     nkeys := node.nkeys()
-//     found := uint16(0)
-//     // the first key is a copy from the parent node,
-//     // thus it's always less than or equal to the key.
-//     for i := uint16(1); i < nkeys; i++ {
-//         cmp := bytes.Compare(node.getKey(i), key)
-//         if cmp <= 0 {
-//             found = i
-//         }
-//         if cmp >= 0 {
-//             break
-//         }
-//     }
-//     return found
-// }
-}
+// namespace database

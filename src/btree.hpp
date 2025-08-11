@@ -18,7 +18,9 @@ public:
     uint64_t get_ptr(uint16_t index);
     void set_ptr(uint16_t index, uint64_t val);
     uint16_t get_offset(uint16_t index);
-    // uint16_t offset_pos(Node bNode, uint16_t index);
+    uint16_t get_kv_pos(uint16_t index);
+    std::vector<char> get_key(uint16_t index);
+    std::vector<char> get_val(uint16_t index);
 private:
 };
 
