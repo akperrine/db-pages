@@ -17,7 +17,6 @@ static constexpr int bnode_leaf = 2;
 
 // | type | nkeys |  pointers  |   offsets  | key-values | unused |
 // |  1B  |   2B  | nkeys * 8B | nkeys * 2B |     ...    |        |
-
 // | klen | vlen | key | val |
 // |  2B  |  2B  | ... | ... |
 
@@ -106,6 +105,22 @@ std::vector<char> Node::get_val(uint16_t index) {
 
     char* v_start = data.data() + (position + 4 + k_length);
     return std::vector<char>(v_start, v_start + v_length);
+}
+
+// Think there is a version of this where index is created internally with n_keys() + 1 -> will see in the future
+void Node::node_append_kv(Node& node, uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val) {
+    node.set_ptr(index, ptr);
+    // index = no uint16_t index = node.n_keys(); (future option)
+
+    auto pos = node.get_kv_pos(index);
+
+    uint16_t k_lenth;
+    uint16_t v_length;
+    memcpy(&k_lenth, &node.data[pos], sizeof(uint16_t));
+    memcpy(&v_length, &node.data[pos + 2], sizeof(uint16_t));
+
+    memcpy(node.data.data() + pos + 4, key.data(), k_lenth);
+    memcpy(node.data.data() + pos + 4 + k_lenth, val.data(), v_length);
 }
 
 }
