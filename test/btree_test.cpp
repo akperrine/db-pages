@@ -5,7 +5,6 @@
 
 namespace database {
     
-    // std::vector<char> mock_data;
     static const std::vector<char> mock_data = {1, 2, 3}; 
     static const Node mock_node(mock_data);
 
@@ -35,5 +34,36 @@ namespace database {
 
         EXPECT_EQ(node_type, 1);
         EXPECT_EQ(keys, 10);
+    }
+
+    TEST(TEST_BTREE, TEST_APPEND_KEY_VALUE) {
+        const size_t BTREE_PAGE_SIZE = 4096;
+
+        // Was getting flagged by compiler (incorectly) with () constructor
+        // called Most Vexing Parse
+        Node mock_node{std::vector<char>(BTREE_PAGE_SIZE)};
+        int mock_key = 1;
+        std::string mock_val = "hi";
+
+        std::vector<char> mock_key_bytes(sizeof(mock_key));
+        std::vector<char> mock_val_bytes(mock_val.size());
+
+        std::memcpy(mock_key_bytes.data(), &mock_key, sizeof(mock_key));
+        std::memcpy(mock_val_bytes.data(), mock_val.data(), mock_val.size());
+
+        uint16_t key_len = mock_key_bytes.size();
+        uint16_t val_len = mock_val_bytes.size();
+
+        
+        std::cerr << "sizes: " << sizeof(mock_key) << " " << mock_val.size() << "\n";
+        mock_node.node_append_kv(0, 0, mock_key_bytes, mock_val_bytes);
+        auto key_bin = mock_node.get_key(0);
+        auto val_bin = mock_node.get_val(0);
+        int key;
+        std::memcpy(&key, key_bin.data(), sizeof(int));
+        std::string val(val_bin.begin(), val_bin.end());
+
+        EXPECT_EQ(1, key);
+        EXPECT_EQ("hi", val);
     }
 }

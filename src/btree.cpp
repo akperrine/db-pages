@@ -108,19 +108,22 @@ std::vector<char> Node::get_val(uint16_t index) {
 }
 
 // Think there is a version of this where index is created internally with n_keys() + 1 -> will see in the future
-void Node::node_append_kv(Node& node, uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val) {
-    node.set_ptr(index, ptr);
+void Node::node_append_kv(uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val) {
+    this->set_ptr(index, ptr);
     // index = no uint16_t index = node.n_keys(); (future option)
 
-    auto pos = node.get_kv_pos(index);
+    auto pos = this->get_kv_pos(index);
 
-    uint16_t k_lenth;
-    uint16_t v_length;
-    memcpy(&k_lenth, &node.data[pos], sizeof(uint16_t));
-    memcpy(&v_length, &node.data[pos + 2], sizeof(uint16_t));
+    uint16_t k_len = static_cast<uint16_t>(key.size());
+    uint16_t v_len = static_cast<uint16_t>(val.size());
 
-    memcpy(node.data.data() + pos + 4, key.data(), k_lenth);
-    memcpy(node.data.data() + pos + 4 + k_lenth, val.data(), v_length);
+    // write the key_size uint16 and val_size uint16
+    memcpy(this->data.data() + pos, &k_len, sizeof(uint16_t));
+    memcpy(this->data.data() + pos + 2, &v_len, sizeof(uint16_t));
+    
+    // write key and value
+    memcpy(this->data.data() + pos + 4, key.data(), k_len);
+    memcpy(this->data.data() + pos + 4 + k_len, val.data(), v_len);
 }
 
 }

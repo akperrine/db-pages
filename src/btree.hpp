@@ -21,7 +21,7 @@ public:
     uint16_t get_kv_pos(uint16_t index);
     std::vector<char> get_key(uint16_t index);
     std::vector<char> get_val(uint16_t index);
-    void node_append_kv(Node& node, uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val);
+    void node_append_kv(uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val);
 private:
 };
 
