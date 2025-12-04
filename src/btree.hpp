@@ -22,12 +22,18 @@ public:
     std::vector<char> get_key(uint16_t index);
     std::vector<char> get_val(uint16_t index);
     void node_append_kv(uint16_t index, uint64_t ptr, const std::vector<char>& key, const std::vector<char>& val);
+    uint16_t get_node_size();
+    
 private:
 };
 
 class BTree {
 public:
     long root;
+
+    void leaf_insert(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val);
+    void node_append_range(Node old_node, Node new_node, uint16_t src_old, uint16_t dst_new, uint16_t iterations);
+    void leaf_update(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val);
     
 private:
 };

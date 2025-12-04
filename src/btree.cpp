@@ -126,5 +126,39 @@ void Node::node_append_kv(uint16_t index, uint64_t ptr, const std::vector<char>&
     memcpy(this->data.data() + pos + 4 + k_len, val.data(), v_len);
 }
 
+uint16_t Node::get_node_size() {
+    return get_kv_pos(n_keys());
+}
+
+// Not Tested
+void BTree::node_append_range(Node old_node, Node new_node, uint16_t src_old, uint16_t dst_new, uint16_t iterations) {
+    for (uint16_t i = 0; i < iterations; i++) {
+        auto dst = dst_new + i;
+        auto src = src_old + i;
+        new_node.node_append_kv(dst, old_node.get_ptr(src), old_node.get_key(src), old_node.get_val(src));
+    }
+}
+
+// Not tested
+void BTree::leaf_insert(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
+        Node new_node;
+        new_node.set_header(1, old_node.n_keys() + 1);
+        // copy values up until to the index
+        node_append_range(old_node, new_node, 0, 0, index);
+        // insert the new KV at the index
+        new_node.node_append_kv(index, 0, key, val);
+        // copy the remaining values to the new node 1 
+        node_append_range(old_node, new_node, index, index + 1, old_node.n_keys() - index);
+}
+
+// Not tested
+void BTree::leaf_update(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
+    Node new_node;
+    new_node.set_header(1, old_node.n_keys());
+    node_append_range(old_node, new_node, 0, 0, index);
+    new_node.node_append_kv(index, 0, key, val);
+    node_append_range(old_node, new_node, index + 1, index + 1, old_node.n_keys() - (index + 1));
+}
+
 }
 // namespace database
