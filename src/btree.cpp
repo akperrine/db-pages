@@ -147,7 +147,7 @@ void BTree::leaf_insert(Node old_node, uint16_t index, const std::vector<char>& 
         node_append_range(old_node, new_node, 0, 0, index);
         // insert the new KV at the index
         new_node.node_append_kv(index, 0, key, val);
-        // copy the remaining values to the new node 1 
+        // copy the remaining values to the new node into + 1 space onward in the new node (index was just inserted)
         node_append_range(old_node, new_node, index, index + 1, old_node.n_keys() - index);
 }
 
@@ -155,9 +155,31 @@ void BTree::leaf_insert(Node old_node, uint16_t index, const std::vector<char>& 
 void BTree::leaf_update(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
     Node new_node;
     new_node.set_header(1, old_node.n_keys());
+    // copy values up until to the index
     node_append_range(old_node, new_node, 0, 0, index);
+    // insert the new KV at the index (overwrite)
     new_node.node_append_kv(index, 0, key, val);
+    // copy values from after index to the end
     node_append_range(old_node, new_node, index + 1, index + 1, old_node.n_keys() - (index + 1));
+}
+
+// Not tested
+uint16_t BTree::node_lookup(Node node, const std::vector<char>& key) {
+    int low = 0;
+    int high = node.n_keys();
+    
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+
+        if (node.get_key(mid) == key) {
+            return mid;
+        } else if (node.get_key(mid) < key) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }   
+    return low;
 }
 
 }
