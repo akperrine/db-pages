@@ -131,7 +131,7 @@ uint16_t Node::get_node_size() {
 }
 
 // Not Tested
-void BTree::node_append_range(Node old_node, Node new_node, uint16_t src_old, uint16_t dst_new, uint16_t iterations) {
+void BTree::node_append_range(Node& old_node, Node& new_node, uint16_t src_old, uint16_t dst_new, uint16_t iterations) {
     for (uint16_t i = 0; i < iterations; i++) {
         auto dst = dst_new + i;
         auto src = src_old + i;
@@ -140,7 +140,7 @@ void BTree::node_append_range(Node old_node, Node new_node, uint16_t src_old, ui
 }
 
 // Not tested
-void BTree::leaf_insert(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
+void BTree::leaf_insert(Node& old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
         Node new_node;
         new_node.set_header(1, old_node.n_keys() + 1);
         // copy values up until to the index
@@ -152,7 +152,8 @@ void BTree::leaf_insert(Node old_node, uint16_t index, const std::vector<char>& 
 }
 
 // Not tested
-void BTree::leaf_update(Node old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
+void BTree::leaf_update(Node& old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val) {
+    
     Node new_node;
     new_node.set_header(1, old_node.n_keys());
     // copy values up until to the index
@@ -164,7 +165,7 @@ void BTree::leaf_update(Node old_node, uint16_t index, const std::vector<char>& 
 }
 
 // Not tested
-uint16_t BTree::node_lookup(Node node, const std::vector<char>& key) {
+uint16_t BTree::node_lookup(Node& node, const std::vector<char>& key) {
     int low = 0;
     int high = node.n_keys();
     
@@ -182,5 +183,37 @@ uint16_t BTree::node_lookup(Node node, const std::vector<char>& key) {
     return low;
 }
 
+// Not tested
+void BTree::split_node_two(Node& l_node, Node& r_node, Node& old_node) {
+    uint16_t num_of_keys = old_node.n_keys();
+    assert(num_of_keys > 1);
+
+    uint16_t n_left = num_of_keys / 2;
+    uint16_t l_byte_size = 4 + 8*n_left + 2*n_left + old_node.get_offset(n_left);
+    while (l_byte_size > btree_page_size) {
+        n_left--;
+        l_byte_size = 4 + 8*n_left + 2*n_left + old_node.get_offset(n_left);
+    }
+    assert(n_left >= 1);
+
+    uint16_t r_byte_size = old_node.get_node_size() - l_byte_size + 4;
+    while (r_byte_size > btree_page_size) {
+        n_left++;
+        r_byte_size = old_node.get_node_size() - n_left + 4;
+    }
+    assert(n_left < old_node.n_keys());
+
+    uint16_t n_right = old_node.get_node_size() - n_left;   
+    l_node.set_header(old_node.get_node_type(), n_left);
+    r_node.set_header(old_node.get_node_type(), n_right); 
+    node_append_range(old_node, l_node, 0, 0, n_left);
+    node_append_range(old_node, r_node, 0, n_left, n_right);
+    assert(r_node.get_node_size() <= btree_page_size);
+}
+
+//TODO: think need to pass by reference
+void BTree::split_node_three(Node& l_node, Node& r_node, Node& old_node) {
+
+}
 }
 // namespace database
