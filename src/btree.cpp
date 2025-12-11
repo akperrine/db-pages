@@ -1,6 +1,7 @@
 #include "./btree.hpp"
 #include <vector>
 #include <cassert>
+#include <tuple>
 #include <cstdint>
 
 namespace database {
@@ -211,9 +212,32 @@ void BTree::split_node_two(Node& l_node, Node& r_node, Node& old_node) {
     assert(r_node.get_node_size() <= btree_page_size);
 }
 
-//TODO: think need to pass by reference
-void BTree::split_node_three(Node& l_node, Node& r_node, Node& old_node) {
-
+// currently returning a tuple
+// Not Tested
+std::tuple<uint16_t, std::array<Node, 3>> BTree::split_node_three(Node& old_node) {
+    std::array<Node, 3> result_nodes;
+    if (old_node.get_node_size() <= btree_page_size) {
+        result_nodes[0] = old_node;
+        return std::make_tuple((uint16_t)1, result_nodes);
+    }
+    Node left = Node();
+    Node right = Node();
+    split_node_two(left, right, old_node);
+    if (left.get_node_size() <= btree_page_size) {
+        result_nodes[0] = left;
+        result_nodes[1] = right;
+        return std::make_tuple((uint16_t)2, result_nodes);
+    } else {
+        Node new_left = Node();
+        Node mid = Node();
+        split_node_two(new_left, mid, left);
+        assert(new_left.get_node_size() <= btree_page_size);
+        result_nodes[0] = new_left;
+        result_nodes[1] = mid;
+        result_nodes[2] = right;
+        return std::make_tuple((uint16_t)3, result_nodes);
+    }
 }
+
 }
 // namespace database

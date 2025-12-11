@@ -36,7 +36,7 @@ public:
     void leaf_update(Node& old_node, uint16_t index, const std::vector<char>& key, const std::vector<char>& val);
     uint16_t node_lookup(Node& node, const std::vector<char>& key);
     void split_node_two(Node& l_node, Node& r_node, Node& old_node);
-    void split_node_three(Node& l_node, Node& r_node, Node& old_node);
+    std::tuple<uint16_t, std::array<Node, 3>> split_node_three(Node& old_node);
 private:
 };
 
