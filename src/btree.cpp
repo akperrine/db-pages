@@ -239,5 +239,45 @@ std::tuple<uint16_t, std::array<Node, 3>> BTree::split_node_three(Node& old_node
     }
 }
 
+// Not Tested
+Node& BTree::tree_insert(Node& node, std::vector<char> key, std::vector<char> val) {
+    Node new_node = Node();
+    uint16_t index = node_lookup(node, key);
+
+    // bnode_leaf
+    if (node.get_node_type() == 1) {
+        // believe this works but will need to debug
+        if (key == node.get_key(index)) {
+            leaf_update(node, index, key, val);
+        } else {
+            leaf_insert(node, index, key, val);
+        }
+    // bnode_node
+    } else {
+        uint64_t ptr_to_child = node.get_ptr(index);
+        // Needs serious Testing!
+        std::vector<char> child_node_b = get_page(ptr_to_child);
+        Node child_node = Node(child_node_b);
+        Node node_insert = tree_insert(child_node, key, val);
+        auto node_split = split_node_three(node_insert);
+        delete_page(ptr_to_child);
+        // TODO: implement the node_replace_kid_n()
+    }
+};
+
+// replace a link with multiple links
+// func nodeReplaceKidN(
+//     tree *BTree, new BNode, old BNode, idx uint16,
+//     kids ...BNode,
+// ) {
+//     inc := uint16(len(kids))
+//     new.setHeader(BNODE_NODE, old.nkeys()+inc-1)
+//     nodeAppendRange(new, old, 0, 0, idx)
+//     for i, node := range kids {
+//         nodeAppendKV(new, idx+uint16(i), tree.new(node), node.getKey(0), nil)
+//     }
+//     nodeAppendRange(new, old, idx+inc, idx+1, old.nkeys()-(idx+1))
+// }
+
 }
 // namespace database
